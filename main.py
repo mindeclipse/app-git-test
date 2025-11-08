@@ -35,17 +35,23 @@ def adjust_for_weekend(birthday):
 # повертає список користувачів, чиї дні народження настають за 'days' днів з урахуванням перенесень у випадку вихідних
 def get_upcoming_birthdays(users, days=7, today = None):
     upcoming_birthdays = []
+    
     # Використовуємо сьогоднішню дату, якщо не задано явно (зручно для продуктивного використання)
     if today is None:
        today = date.today()
-
+    
     for user in users:
+        # Створюємо дату дня народження у поточному році
         birthday_this_year = user["birthday"].replace(year=today.year)
+
+        # Якщо така дата вже минула цього року, беремо дату з наступного року
         if birthday_this_year < today:
             birthday_this_year = birthday_this_year.replace(year=today.year + 1)
-
+        
+        # Коригуємо дату, якщо потрапила на вихідні — переносимо на понеділок
         congratulation_date = adjust_for_weekend(birthday_this_year)
-
+        
+        # Якщо дата святкування потрапляє у вказаний інтервал — додаємо користувача у список
         if 0 <= (congratulation_date - today).days <= days:
             congratulation_date_str = date_to_string(congratulation_date)
             upcoming_birthdays.append({
@@ -55,6 +61,7 @@ def get_upcoming_birthdays(users, days=7, today = None):
 
     return upcoming_birthdays
 
+# Вихідні дані — список користувачів з іменем і датою народження (у рядковому форматі)
 users = [
     {"name": "Bill Gates", "birthday": "1955.3.25"},
     {"name": "Steve Jobs", "birthday": "1955.3.21"},
@@ -64,9 +71,20 @@ users = [
     {"name": "John Doe", "birthday": "1985.11.09"},
     {"name": "Jane Smith", "birthday": "1990.01.27"}
 ]
+
+# Готуємо список користувачів для подальшої обробки
 prepared_users = prepare_user_list(users)
+
+# Отримуємо список тих, у кого день народження у найближчі 7 днів
 upcoming = get_upcoming_birthdays(prepared_users, days=7)
 
+# Поточна дата
+today = date.today()
+
+# Виводимо інформацію по кожному користувачу:
+# - дату народження у цьому році
+# - дату вітання (з урахуванням вихідних)
+# - кількість днів до цієї дати
 for user in prepared_users:
     birthday_this_year = user["birthday"].replace(year=today.year)
     if birthday_this_year < today:
