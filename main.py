@@ -44,12 +44,13 @@ def get_upcoming_birthdays(users, days=7, today = None):
         # Створюємо дату дня народження у поточному році
         birthday_this_year = user["birthday"].replace(year=today.year)
 
-        # Якщо така дата вже минула цього року, беремо дату з наступного року
-        if birthday_this_year < today:
-            birthday_this_year = birthday_this_year.replace(year=today.year + 1)
-        
         # Коригуємо дату, якщо потрапила на вихідні — переносимо на понеділок
         congratulation_date = adjust_for_weekend(birthday_this_year)
+
+        # Якщо дата привітання вже минула цього року, беремо дату з наступного року
+        if congratulation_date < today:
+            birthday_this_year = birthday_this_year.replace(year=today.year + 1)
+            congratulation_date = adjust_for_weekend(birthday_this_year)
         
         # Якщо дата святкування потрапляє у вказаний інтервал — додаємо користувача у список
         if 0 <= (congratulation_date - today).days <= days:
